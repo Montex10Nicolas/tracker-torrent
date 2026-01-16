@@ -11,10 +11,13 @@ export const tracker = sqliteTable("tracker", {
   name: text("name").notNull(),
 })
 
+// Duration is in minutes
+// Size is in GB
 export const record = sqliteTable("record", {
   id: text("id").primaryKey(),
   name: text("name"),
   size: integer("size"),
+  duration: integer('duration'),
   upTimeNeeded: integer("upTimeNeeded"),
   upTime: integer("uptime"),
   isWatched: integer("watched", { mode: "boolean" }),
