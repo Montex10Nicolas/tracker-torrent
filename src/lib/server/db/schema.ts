@@ -1,6 +1,4 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { boolean } from "drizzle-orm/mysql-core";
-import { timestampSql } from ".";
 
 export const disk = sqliteTable("disk", {
   id: text("id").primaryKey(),
@@ -8,15 +6,15 @@ export const disk = sqliteTable("disk", {
   space: integer("space").notNull(),
 });
 
-export const record = sqliteTable("item", {
+export const record = sqliteTable("record", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  size: integer("size").notNull(),
-  upTimeNeeded: integer("upTimeNeeded").notNull(),
-  upTime: integer("uptime").notNull(),
-  watched: boolean("watched").notNull(),
-  deleted: boolean("deleted").notNull(),
-  disk: integer("disk").notNull(),
-  completedAt: timestampSql("completedAt", "timestamp_ms").notNull(),
-  updatedAt: timestampSql("updatedAt", "timestamp").notNull(),
+  name: text("name"),
+  size: integer("size"),
+  upTimeNeeded: integer("upTimeNeeded"),
+  upTime: integer("uptime"),
+  isWatched: integer("watched", { mode: "boolean" }),
+  isDeleted: integer("deleted", { mode: "boolean" }),
+  disk: integer("disk"),
+  completedAt: integer("completedAt", { mode: "timestamp_ms" }),
+  updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
 });
