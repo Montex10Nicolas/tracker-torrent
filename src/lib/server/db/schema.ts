@@ -1,4 +1,5 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { db } from ".";
 
 export const disk = sqliteTable("disk", {
   id: text("id").primaryKey(),
@@ -11,11 +12,11 @@ export const tracker = sqliteTable("tracker", {
   name: text("name").notNull(),
 })
 
-// Duration is in minutes
+// Duration, upTime and upTimeNeeded are in minutes
 // Size is in GB
-export const record = sqliteTable("record", {
+export const recordDB = sqliteTable("record", {
   id: text("id").primaryKey(),
-  name: text("name"),
+  name: text("name").notNull(),
   size: integer("size"),
   duration: integer('duration'),
   upTimeNeeded: integer("upTimeNeeded"),
@@ -24,11 +25,18 @@ export const record = sqliteTable("record", {
   isDeleted: integer("deleted", { mode: "boolean" }),
   diskID: text("diskID").references(() => disk.id),
   trackerID: text("trackerID").references(() => tracker.id),
-  completedAt: integer("completedAt", { mode: "timestamp_ms" }),
-  updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+  completedAt: integer("completedAt", { mode: "timestamp" }),
+  updatedAt: integer("updatedAt", { mode: "timestamp" })
 })
 
-export type RecordInsert = typeof record.$inferInsert
-export type RecordSelect = typeof record.$inferSelect;
+export const messageDB = sqliteTable("message", {
+  id: text("id").primaryKey(),
+  content: text("content"),
+  createdAt: integer("createdAt", { mode: "timestamp" }),
+  createdString: text("cString")
+})
+
+export type RecordInsert = typeof recordDB.$inferInsert
+export type RecordSelect = typeof recordDB.$inferSelect;
 
 
