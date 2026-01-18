@@ -2,6 +2,7 @@
   import { getAllDisks, getAllTrackers } from "$lib/utils/remotes/db.remote";
   import type { RemoteFormIssue } from "@sveltejs/kit";
   import { insertRecord } from "./record.remote";
+  import { addZeroDate, uptimeNeeded } from "$lib/utils/index.svelte";
 
   const disks = $derived(await getAllDisks());
   const trackers = $derived(await getAllTrackers());
@@ -14,38 +15,16 @@
   )}T${addZeroDate(today.getHours())}:${addZeroDate(today.getMinutes())}`;
 
   function init() {
-    fields.completedAt.set(today_in_timelocal);
     fields.name.set("");
-    fields.size.set(0);
-    fields.duration.set(0);
-    fields.upTime.set(0);
+    fields.size.set(1);
+    fields.duration.set(1);
+    fields.upTime.set(1);
     fields.isWatched.set(false);
     fields.isDeleted.set(false);
-    fields.name.set("");
     fields.updatedAt.set(Number(new Date()));
+    fields.completedAt.set(today_in_timelocal);
   }
   init();
-
-  function addZeroDate(value: number) {
-    return String(value).padStart(2, "0");
-  }
-
-  function uptimeNeeded(size: number) {
-    let hours = 0;
-    if (size === null || size === undefined) {
-      return null;
-    }
-    if (size <= 1) {
-      hours = 72;
-    }
-    if (size > 1 && size < 50) {
-      hours = 72 + 2 * size;
-    }
-    if (size >= 50) {
-      hours = 100 * Math.log(size) - 219.2023;
-    }
-    return hours * 60;
-  }
 </script>
 
 {#snippet displayIssue(issues: RemoteFormIssue[] | undefined)}
@@ -62,8 +41,7 @@
 
 <div class="p-2">
   <form
-    {...insertRecord.enhance(async ({ submit, data }) => {
-      console.info("TimeNeededEnhance: ", fields.upTimeNeeded.value());
+    {...insertRecord.enhance(async ({ submit }) => {
       await submit();
     })}
     class="flex flex-col"
@@ -88,12 +66,12 @@
       </label>
       <label>
         Watched
-        <input {...fields.isWatched.as("checkbox")} defaultvalue="false" />
+        <input {...fields.isWatched.as("checkbox")} />
         {@render displayIssue(fields.isWatched.issues())}
       </label>
       <label>
         Deleted
-        <input {...fields.isDeleted.as("checkbox")} defaultvalue="false" />
+        <input {...fields.isDeleted.as("checkbox")} />
         {@render displayIssue(fields.isDeleted.issues())}
       </label>
       <label>
@@ -129,20 +107,21 @@
       {@render displayIssue(fields.updatedAt.issues())}
     </div>
     <button
-      onclick={(e) => {
-        console.log("You are here");
+      onclick={async (e) => {
         e.preventDefault();
-        const needed = uptimeNeeded(fields.size.value());
-        console.log(needed);
-        if (needed === null) {
-          console.log("null");
-          insertRecord.fields.upTimeNeeded.set(33);
-        } else {
-          console.log("correct");
-          insertRecord.fields.upTimeNeeded.set(needed);
-        }
         const form = e.currentTarget.form!;
-        form.requestSubmit();
+        const needed = uptimeNeeded(fields.size.value());
+        if (needed === null) {
+          return;
+        }
+
+        async function setCorrectedUptime() {
+          insertRecord.fields.upTimeNeeded.set(Math.ceil(needed!));
+        }
+
+        await setCorrectedUptime().then(() => {
+          form.requestSubmit();
+        });
       }}
       class=" m-2 cursor-pointer rounded-sm bg-sky-800 py-3 font-semibold text-white uppercase"
     >

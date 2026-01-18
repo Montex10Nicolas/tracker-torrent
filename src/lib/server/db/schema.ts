@@ -1,5 +1,4 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { db } from ".";
 
 export const disk = sqliteTable("disk", {
   id: text("id").primaryKey(),
@@ -39,4 +38,6 @@ export const messageDB = sqliteTable("message", {
 export type RecordInsert = typeof recordDB.$inferInsert
 export type RecordSelect = typeof recordDB.$inferSelect;
 
+export type DiskSelect = typeof disk.$inferSelect;
+export type TrackerSelect = typeof tracker.$inferSelect;
 
