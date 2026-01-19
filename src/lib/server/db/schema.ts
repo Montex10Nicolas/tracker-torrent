@@ -9,6 +9,7 @@ export const disk = sqliteTable("disk", {
 export const tracker = sqliteTable("tracker", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  latestDownload: integer("latestDownload", { mode: "timestamp" })
 })
 
 // Duration, upTime and upTimeNeeded are in minutes

@@ -1,6 +1,11 @@
 <script lang="ts">
   import { type DiskSelect, type RecordSelect, type TrackerSelect } from "$lib/server/db/schema";
-  import { addZeroDate, uptimeNeeded } from "$lib/utils/index.svelte";
+  import {
+    addZeroDate,
+    minutesToDateTuple,
+    stringDuration,
+    uptimeNeeded,
+  } from "$lib/utils/index.svelte";
   import { deleteRecord, updateRecord } from "./record.remote";
 
   type Props = {
@@ -32,16 +37,9 @@
 
   const totalRuntime = $derived.by(() => {
     if (duration === null) return null;
-    let tempDuration = duration;
-    const days = Math.floor(tempDuration / (60 * 24));
-    tempDuration -= days * (60 * 24);
-    const hours = Math.floor(tempDuration / 60);
-    const minutes = tempDuration - hours * 60;
 
-    return [days, hours, minutes] as const;
+    return minutesToDateTuple(duration);
   });
-  const stringDuration = () =>
-    totalRuntime === null ? "" : `${totalRuntime[0]}d-${totalRuntime[1]}h-${totalRuntime[2]}m`;
 
   const shortDate = (date: Date | null) => {
     if (date === null) return "";
@@ -76,8 +74,6 @@
   }
 </script>
 
-<svelte:window />
-
 {#if deleteFlag}
   <div
     class="absolute top-0 left-0 z-99 grid h-screen w-screen place-items-center overflow-hidden bg-gray-800/80"
@@ -100,7 +96,7 @@
 
 <tr class="relative rounded-sm border border-transparent">
   <td class="hidden"> {id}</td>
-  <td class="">
+  <td class="max-w-36 overflow-hidden">
     <input type="text" class="" bind:value={name} />
   </td>
   <td class="max-w-20">
@@ -111,7 +107,7 @@
       <div class="flex flex-col">
         <input type="number" class="max-w-20" bind:value={duration} />
         <button
-          class="mx-auto mb-1 cursor-pointer rounded-sm bg-green-400 px-1 text-sm text-black uppercase"
+          class="mx-auto mb-1 w-full cursor-pointer rounded-sm bg-green-400 px-1 text-sm font-semibold text-black uppercase"
           onclick={() => {
             durationFlag = false;
           }}>Close</button
@@ -119,29 +115,50 @@
       </div>
     {:else}
       <button
-        class="cursor-pointer"
+        class="flex w-full items-center justify-center px-1.5"
         onclick={() => {
           durationFlag = !durationFlag;
         }}
       >
-        {stringDuration()}
+        {stringDuration(totalRuntime)}
       </button>
     {/if}
   </td>
   <td
-    class="cursor-pointer"
+    class="cursor-pointer px-1.5 text-center"
     onclick={() => {
       isDeleted = !isDeleted;
-    }}>{isDeleted ? "Deleted" : "Not Deleted"}</td
+    }}>{isDeleted ? "" : "Not"} Deleted</td
   >
   <td
-    class="cursor-pointer"
+    class="cursor-pointer px-1.5 text-center"
     onclick={() => {
       isWatched = !isWatched;
     }}>{isWatched ? "" : "Not"} Watched</td
   >
-  <td class="max-w-20"> <input class="max-w-full" type="number" bind:value={upTime} /></td>
-  <td class="text-center align-middle">{size !== null ? uptimeNeeded(size) : upTimeNeeded}</td>
+  <td class="flex max-w-20 flex-col">
+    <input class="max-w-full" type="number" bind:value={upTime} />
+    <small class="mx-auto text-xs">
+      {stringDuration(minutesToDateTuple(upTime ?? 0))}
+    </small>
+  </td>
+  <td class="">
+    <span class="mx-auto flex min-h-full max-w-24 flex-col text-center">
+      {#if upTimeNeeded === null}
+        <span class="font-semibold">
+          {uptimeNeeded(size ?? 0)}
+        </span>
+        <small>{stringDuration(minutesToDateTuple(size ?? 0))}</small>
+      {:else}
+        <span class="mx-auto font-semibold">
+          {upTimeNeeded}
+        </span>
+        <small>
+          {stringDuration(minutesToDateTuple(upTimeNeeded))}
+        </small>
+      {/if}
+    </span>
+  </td>
   <td>
     {#if completedAt !== null}
       <input
@@ -156,14 +173,14 @@
     {/if}
   </td>
   <td>
-    <select>
+    <select bind:value={diskID}>
       {#each disks as disk}
-        <option value={disk.id}>{disk.name}</option>
+        <option value={disk.id}>{disk.name} ({disk.space})</option>
       {/each}
     </select>
   </td>
   <td>
-    <select>
+    <select bind:value={trackerID}>
       {#each trackers as tracker}
         <option value={tracker.id}>{tracker.name}</option>
       {/each}
@@ -203,24 +220,20 @@
     appearance: textfield;
     -moz-appearance: textfield;
   }
-  input[type="datetime-local"] {
-    width: 210px;
-    padding: 0 auto;
-  }
-  input[type="text"] {
-    text-align: left;
-  }
   input[type="number"] {
     text-align: right;
   }
-  input:hover {
-    border: 1px solid black;
-  }
-  td {
-    text-align: center;
+
+  tr {
     border: 1px solid gray;
+    padding: 0px 2px;
   }
+
+  td {
+    border-left: 1px solid gray;
+  }
+
   select {
-    border: none;
+    border-color: transparent;
   }
 </style>

@@ -1,6 +1,6 @@
 import { command, form, query } from "$app/server";
 import { db } from "$lib/server/db";
-import { recordDB } from "$lib/server/db/schema";
+import { recordDB, tracker } from "$lib/server/db/schema";
 import * as v from "valibot";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
@@ -24,25 +24,28 @@ const insertRecordSchema = v.object({
   updatedAt: v.number()
 });
 
+
 export const insertRecord = form(insertRecordSchema, async ({
   id, name, size, duration, upTime, upTimeNeeded, isWatched, isDeleted, completedAt, updatedAt, trackerID, diskID
 }) => {
   try {
-    console.log(isWatched);
-    // await db.insert(recordDB).values({
-    //   id,
-    //   diskID,
-    //   completedAt: new Date(completedAt),
-    //   name,
-    //   size,
-    //   duration,
-    //   isDeleted,
-    //   isWatched,
-    //   trackerID,
-    //   upTime,
-    //   upTimeNeeded,
-    //   updatedAt: new Date(updatedAt)
-    // })
+    await db.insert(recordDB).values({
+      id,
+      diskID,
+      completedAt: new Date(completedAt),
+      name,
+      size,
+      duration,
+      isDeleted,
+      isWatched,
+      trackerID,
+      upTime,
+      upTimeNeeded,
+      updatedAt: new Date(updatedAt)
+    });
+    await db.update(tracker).set({
+      latestDownload: new Date()
+    }).where(eq(tracker.id, trackerID));
     return {
       response: "Everything okay"
     };
@@ -69,7 +72,7 @@ const updateRecordSchema = v.object({
 export const updateRecord = command(updateRecordSchema, async ({
   id, name, size, duration, upTime, upTimeNeeded, isWatched, isDeleted, completedAt, updatedAt, trackerID, diskID
 }) => {
-  console.log("Trying to update " + id);
+  console.log("Trying to update " + id + "disk:", diskID);
   try {
     const res = await db.update(recordDB)
       .set({
@@ -86,6 +89,7 @@ export const updateRecord = command(updateRecordSchema, async ({
         upTimeNeeded,
         updatedAt: updatedAt !== null ? new Date(updatedAt) : null
       }).where(eq(recordDB.id, id))
+    console.log(res);
     await getRecords().refresh();
     return {
       success: true

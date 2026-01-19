@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { minutesToDateTuple, stringDuration } from "$lib/utils/index.svelte";
   import { getAllDisks, getAllTrackers } from "$lib/utils/remotes/db.remote";
   import { getRecords } from "./record.remote";
   import RecordItem from "./RecordItem.svelte";
@@ -31,49 +32,64 @@
   );
 </script>
 
-<div>
-  <h1>Records</h1>
-  <div>
-    <table>
-      <thead>
+<div class="min-w-screen">
+  <table class="w-full">
+    <thead class="">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Size</th>
+        <th scope="col">Duration</th>
+        <th scope="col">Deleted</th>
+        <th scope="col">Watched</th>
+        <th scope="col">Uptime</th>
+        <th scope="col">Uptime Needed</th>
+        <th scope="col">Completed At</th>
+        <th scope="col">DiskID</th>
+        <th scope="col">TrackerID</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="">
+      {#each records as record}
+        <RecordItem record={record} disks={disks} trackers={trackers} />
+      {:else}
         <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Size</th>
-          <th scope="col">Duration</th>
-          <th scope="col">Deleted</th>
-          <th scope="col">Watched</th>
-          <th scope="col">Uptime</th>
-          <th scope="col">Uptime Needed</th>
-          <th scope="col">Completed At</th>
-          <th scope="col">DiskID</th>
-          <th scope="col">TrackerID</th>
-          <th scope="col">Actions</th>
+          <td colspan="12" class="text-center font-bold"> There are no records here... </td>
         </tr>
-      </thead>
-      <tbody>
-        {#each records as record}
-          <RecordItem record={record} disks={disks} trackers={trackers} />
-        {:else}
-          <tr>
-            <td colspan="12" class="text-center font-bold"> There are no records here... </td>
-          </tr>
-        {/each}
-      </tbody>
-      <tfoot class="w-full bg-gray-800 text-center text-white">
-        <tr>
-          <th class="py-2 pl-4 text-start">Total:</th>
-          <td>{recordSums.size}</td>
-          <td>{recordSums.duration}</td>
-          <td></td>
-          <td></td>
-          <td>{recordSums.uptime}</td>
-          <td>{recordSums.uptimeNeeded.toFixed(2)}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
+      {/each}
+    </tbody>
+    <tfoot class="w-full bg-gray-800 text-center text-white">
+      <tr>
+        <th class="py-2 pl-4 text-start">Total:</th>
+        <td>{recordSums.size.toFixed(2)}</td>
+        <td class="flex flex-col">
+          <span>
+            {recordSums.duration.toFixed(2)}
+          </span>
+          <span>
+            <small>
+              {stringDuration(minutesToDateTuple(recordSums.duration))}
+            </small>
+          </span>
+        </td>
+        <td></td>
+        <td></td>
+        <td>{recordSums.uptime}</td>
+        <td class="flex flex-col">
+          <span>
+            {recordSums.uptimeNeeded.toFixed(2)}
+          </span>
+          <span>
+            <small>
+              {stringDuration(minutesToDateTuple(recordSums.uptimeNeeded))}
+            </small>
+          </span>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
 </div>

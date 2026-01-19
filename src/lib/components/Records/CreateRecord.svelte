@@ -46,46 +46,46 @@
     })}
     class="flex flex-col"
   >
-    <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+    <div class="grid grid-cols-5 gap-x-8 gap-y-2">
       <input {...fields.id.as("hidden", crypto.randomUUID())} />
       <input {...fields.upTimeNeeded.as("number")} type="hidden" />
       <label>
-        Name
+        <span> Name </span>
         <input {...fields.name.as("text")} />
         {@render displayIssue(fields.name.issues())}
       </label>
       <label>
-        Size
+        <span> Size </span>
         <input {...fields.size.as("number")} step="0.01" />
         {@render displayIssue(fields.size.issues())}
       </label>
       <label>
-        Duration
+        <span> Duration (minutes) </span>
         <input {...fields.duration.as("number")} />
         {@render displayIssue(fields.duration.issues())}
       </label>
-      <label>
-        Watched
-        <input {...fields.isWatched.as("checkbox")} />
+      <label class="items-center justify-center">
+        <span> Watched </span>
+        <input {...fields.isWatched.as("checkbox")} defaultvalue="false" />
         {@render displayIssue(fields.isWatched.issues())}
       </label>
-      <label>
-        Deleted
+      <label class="items-center justify-center">
+        <span> Deleted </span>
         <input {...fields.isDeleted.as("checkbox")} />
         {@render displayIssue(fields.isDeleted.issues())}
       </label>
       <label>
-        Uptime (minutes)
+        <span> Uptime (minutes) </span>
         <input {...fields.upTime.as("number")} />
         {@render displayIssue(fields.upTime.issues())}
       </label>
       <label>
-        Completed At
+        <span> Completed At </span>
         <input {...fields.completedAt.as("datetime-local")} />
         {@render displayIssue(fields.completedAt.issues())}
       </label>
       <label>
-        Tracker
+        <span> Tracker </span>
         <select {...fields.trackerID.as("select")}>
           {#each trackers as tracker (`disk-${tracker.id}`)}
             <option value={tracker.id}>{tracker.name}</option>
@@ -94,7 +94,7 @@
         {@render displayIssue(fields.trackerID.issues())}
       </label>
       <label>
-        Disk
+        <span> Disk </span>
         <select {...fields.diskID.as("select")}>
           {#each disks as disk (`disk-${disk.id}`)}
             <option value={disk.id}>{disk.name} ({disk.space})</option>
@@ -129,3 +129,32 @@
     </button>
   </form>
 </div>
+
+<style>
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  label > span {
+    font-weight: 700;
+  }
+
+  input,
+  select {
+    border-radius: 0.25rem;
+  }
+
+  input[type="number"] {
+    text-align: right;
+    -moz-appearances: textfield;
+    appearance: textfield;
+  }
+
+  label > input[type="checkbox"] {
+    width: 100%;
+    height: 2.5rem;
+    outline: none;
+    cursor: pointer;
+  }
+</style>
