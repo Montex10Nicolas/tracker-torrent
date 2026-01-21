@@ -3,11 +3,17 @@
   import { locales, localizeHref } from "$lib/paraglide/runtime";
   import "./layout.css";
   import favicon from "$lib/assets/favicon.svg";
+  import { tabManager } from "$lib/utils/store.svelte";
+  import Tab from "$lib/components/Tab/Tab.svelte";
 
   let { children } = $props();
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
+
+{#if tabManager.isOpen}
+  <Tab />
+{/if}
 
 {@render children()}
 <div style="display:none">

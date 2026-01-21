@@ -42,3 +42,13 @@ export function stringDuration(value: [number, number, number] | null) {
 
   return final
 }
+
+// Default fixed value is 2
+export function noInfiniteDecimals(value: number, fixedValue = 2) {
+  const stringValue = value.toString();
+  if (stringValue.includes(".")) {
+    return value.toFixed(fixedValue);
+  }
+
+  return value;
+}

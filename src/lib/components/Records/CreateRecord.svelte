@@ -41,8 +41,9 @@
 
 <div class="p-2">
   <form
-    {...insertRecord.enhance(async ({ submit }) => {
+    {...insertRecord.enhance(async ({ submit, form }) => {
       await submit();
+      form.reset();
     })}
     class="flex flex-col"
   >
@@ -66,12 +67,12 @@
       </label>
       <label class="items-center justify-center">
         <span> Watched </span>
-        <input {...fields.isWatched.as("checkbox")} defaultvalue="false" />
+        <input {...fields.isWatched.as("checkbox")} />
         {@render displayIssue(fields.isWatched.issues())}
       </label>
       <label class="items-center justify-center">
         <span> Deleted </span>
-        <input {...fields.isDeleted.as("checkbox")} />
+        <input class="checked:bg-red-800" {...fields.isDeleted.as("checkbox")} />
         {@render displayIssue(fields.isDeleted.issues())}
       </label>
       <label>
@@ -123,7 +124,7 @@
           form.requestSubmit();
         });
       }}
-      class=" m-2 cursor-pointer rounded-sm bg-sky-800 py-3 font-semibold text-white uppercase"
+      class="mt-4 cursor-pointer rounded-sm bg-amber-300 py-3 font-semibold text-black uppercase"
     >
       Submit
     </button>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { minutesToDateTuple, stringDuration } from "$lib/utils/index.svelte";
+  import { minutesToDateTuple, noInfiniteDecimals, stringDuration } from "$lib/utils/index.svelte";
   import { getAllDisks, getAllTrackers } from "$lib/utils/remotes/db.remote";
   import { getRecords } from "./record.remote";
   import RecordItem from "./RecordItem.svelte";
@@ -61,10 +61,10 @@
     <tfoot class="w-full bg-gray-800 text-center text-white">
       <tr>
         <th class="py-2 pl-4 text-start">Total:</th>
-        <td>{recordSums.size.toFixed(2)}</td>
+        <td>{noInfiniteDecimals(recordSums.size)}</td>
         <td class="flex flex-col">
           <span>
-            {recordSums.duration.toFixed(2)}
+            {noInfiniteDecimals(recordSums.duration)}
           </span>
           <span>
             <small>
@@ -74,10 +74,15 @@
         </td>
         <td></td>
         <td></td>
-        <td>{recordSums.uptime}</td>
+        <td
+          >{recordSums.uptime}
+          <small>
+            {stringDuration(minutesToDateTuple(recordSums.uptime))}
+          </small>
+        </td>
         <td class="flex flex-col">
           <span>
-            {recordSums.uptimeNeeded.toFixed(2)}
+            {noInfiniteDecimals(recordSums.uptimeNeeded)}
           </span>
           <span>
             <small>

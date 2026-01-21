@@ -24,7 +24,7 @@ const insertRecordSchema = v.object({
   updatedAt: v.number()
 });
 
-
+// WARNING: iswatched does not work
 export const insertRecord = form(insertRecordSchema, async ({
   id, name, size, duration, upTime, upTimeNeeded, isWatched, isDeleted, completedAt, updatedAt, trackerID, diskID
 }) => {

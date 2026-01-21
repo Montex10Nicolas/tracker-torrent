@@ -96,7 +96,7 @@
 
 <tr class="relative rounded-sm border border-transparent">
   <td class="hidden"> {id}</td>
-  <td class="max-w-36 overflow-hidden">
+  <td class="max-w-36 overflow-hidden focus-within:min-w-fit">
     <input type="text" class="" bind:value={name} />
   </td>
   <td class="max-w-20">
@@ -125,25 +125,25 @@
     {/if}
   </td>
   <td
-    class="cursor-pointer px-1.5 text-center"
+    class="cursor-pointer px-1.5 text-center text-sm"
     onclick={() => {
       isDeleted = !isDeleted;
     }}>{isDeleted ? "" : "Not"} Deleted</td
   >
   <td
-    class="cursor-pointer px-1.5 text-center"
+    class="cursor-pointer px-1.5 text-center text-sm"
     onclick={() => {
       isWatched = !isWatched;
     }}>{isWatched ? "" : "Not"} Watched</td
   >
-  <td class="flex max-w-20 flex-col">
-    <input class="max-w-full" type="number" bind:value={upTime} />
-    <small class="mx-auto text-xs">
+  <td class="flex max-w-38 flex-col items-center justify-center">
+    <input class="max-w-24" type="number" bind:value={upTime} />
+    <small class="text-center">
       {stringDuration(minutesToDateTuple(upTime ?? 0))}
     </small>
   </td>
   <td class="">
-    <span class="mx-auto flex min-h-full max-w-24 flex-col text-center">
+    <span class="flex flex-col text-center">
       {#if upTimeNeeded === null}
         <span class="font-semibold">
           {uptimeNeeded(size ?? 0)}
@@ -159,10 +159,11 @@
       {/if}
     </span>
   </td>
-  <td>
+  <td class="">
     {#if completedAt !== null}
       <input
         type="datetime-local"
+        class="text-sm"
         bind:value={
           () => local_time(completedAt!),
           (v) => {
@@ -173,32 +174,32 @@
     {/if}
   </td>
   <td>
-    <select bind:value={diskID}>
+    <select bind:value={diskID} class="text-xs">
       {#each disks as disk}
         <option value={disk.id}>{disk.name} ({disk.space})</option>
       {/each}
     </select>
   </td>
   <td>
-    <select bind:value={trackerID}>
+    <select bind:value={trackerID} class="text-xs">
       {#each trackers as tracker}
         <option value={tracker.id}>{tracker.name}</option>
       {/each}
     </select>
   </td>
-  <td class="grid grid-cols-2 grid-rows-2 flex-col"
+  <td class="grid grid-cols-2 grid-rows-2"
     ><button
       onclick={handleUpdate}
-      class="w-full cursor-pointer bg-sky-400 px-2 py-1 text-sm font-semibold text-white uppercase"
-      >Update</button
+      class="w-full cursor-pointer bg-sky-400 px-2 text-xs font-semibold text-white uppercase"
+      >UP</button
     >
     <button
       onclick={() => (deleteFlag = true)}
-      class="w-full cursor-pointer bg-red-800 px-2 py-1 text-sm font-semibold text-white uppercase"
-      >Delete</button
+      class="w-full cursor-pointer bg-red-800 px-2 py-1 text-xs font-semibold text-white uppercase"
+      >DEL</button
     >
     <button
-      class="col-span-2 row-span-1 cursor-pointer px-2 py-1 text-sm font-semibold uppercase"
+      class="col-span-2 row-span-1 cursor-pointer px-2 py-1 text-xs font-semibold uppercase"
       onclick={() => {
         name = freezedRecord.name;
         size = freezedRecord.size;
@@ -224,10 +225,10 @@
     text-align: right;
   }
 
-  tr {
-    border: 1px solid gray;
-    padding: 0px 2px;
-  }
+  /* tr { */
+  /*   border: 1px solid gray; */
+  /*   padding: 0px 2px; */
+  /* } */
 
   td {
     border-left: 1px solid gray;
