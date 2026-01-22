@@ -10,7 +10,6 @@ export const getRecords = query(async () => {
 })
 
 const insertRecordSchema = v.object({
-  id: v.string(),
   name: v.string(),
   size: v.number(),
   duration: v.pipe(v.number(), v.minValue(1)),
@@ -24,13 +23,12 @@ const insertRecordSchema = v.object({
   updatedAt: v.number()
 });
 
-// WARNING: iswatched does not work
 export const insertRecord = form(insertRecordSchema, async ({
-  id, name, size, duration, upTime, upTimeNeeded, isWatched, isDeleted, completedAt, updatedAt, trackerID, diskID
+  name, size, duration, upTime, upTimeNeeded, isWatched, isDeleted, completedAt, updatedAt, trackerID, diskID
 }) => {
   try {
     await db.insert(recordDB).values({
-      id,
+      id: crypto.randomUUID(),
       diskID,
       completedAt: new Date(completedAt),
       name,
@@ -72,7 +70,6 @@ const updateRecordSchema = v.object({
 export const updateRecord = command(updateRecordSchema, async ({
   id, name, size, duration, upTime, upTimeNeeded, isWatched, isDeleted, completedAt, updatedAt, trackerID, diskID
 }) => {
-  console.log("Trying to update " + id + "disk:", diskID);
   try {
     const res = await db.update(recordDB)
       .set({
@@ -89,7 +86,6 @@ export const updateRecord = command(updateRecordSchema, async ({
         upTimeNeeded,
         updatedAt: updatedAt !== null ? new Date(updatedAt) : null
       }).where(eq(recordDB.id, id))
-    console.log(res);
     await getRecords().refresh();
     return {
       success: true

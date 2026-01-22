@@ -3,6 +3,7 @@
   import type { RemoteFormIssue } from "@sveltejs/kit";
   import { insertRecord } from "./record.remote";
   import { addZeroDate, uptimeNeeded } from "$lib/utils/index.svelte";
+  import { globalToats } from "../Toast/toast.svelte";
 
   const disks = $derived(await getAllDisks());
   const trackers = $derived(await getAllTrackers());
@@ -41,14 +42,17 @@
 
 <div class="p-2">
   <form
-    {...insertRecord.enhance(async ({ submit, form }) => {
+    {...insertRecord.enhance(async ({ submit, form, data }) => {
+      globalToats.add({
+        type: "CREATE",
+        message: `Creating ${data.name}`,
+      });
       await submit();
       form.reset();
     })}
     class="flex flex-col"
   >
     <div class="grid grid-cols-5 gap-x-8 gap-y-2">
-      <input {...fields.id.as("hidden", crypto.randomUUID())} />
       <input {...fields.upTimeNeeded.as("number")} type="hidden" />
       <label>
         <span> Name </span>

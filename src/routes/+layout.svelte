@@ -5,6 +5,7 @@
   import favicon from "$lib/assets/favicon.svg";
   import { tabManager } from "$lib/utils/store.svelte";
   import Tab from "$lib/components/Tab/Tab.svelte";
+  import Toast from "$lib/components/Toast/Toast.svelte";
 
   let { children } = $props();
 </script>
@@ -23,3 +24,5 @@
     </a>
   {/each}
 </div>
+
+<Toast />

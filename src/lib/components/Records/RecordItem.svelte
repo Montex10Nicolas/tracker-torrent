@@ -6,6 +6,7 @@
     stringDuration,
     uptimeNeeded,
   } from "$lib/utils/index.svelte";
+  import { globalToats } from "../Toast/toast.svelte";
   import { deleteRecord, updateRecord } from "./record.remote";
 
   type Props = {
@@ -53,6 +54,10 @@
     )}T${addZeroDate(today.getHours())}:${addZeroDate(today.getMinutes())}`;
 
   async function handleUpdate() {
+    const [key, toast] = globalToats.add({
+      message: `Updating ${name}`,
+      type: "UPDATE",
+    });
     await updateRecord({
       id,
       name,
@@ -66,11 +71,24 @@
       updatedAt: Number(new Date()),
       diskID,
       trackerID,
+    }).then((res) => {
+      let message = res ? "" : "Not" + " Updated " + name;
+      setTimeout(() => {
+        globalToats.update(key, {
+          message,
+          type: "UPDATE",
+        });
+      }, 1000);
     });
   }
   async function handleDelete() {
     const res = await deleteRecord(id);
     deleteFlag = false;
+
+    globalToats.add({
+      message: `Delted ${name}`,
+      type: "DELETE",
+    });
   }
 </script>
 
