@@ -72,8 +72,8 @@
       diskID,
       trackerID,
     }).then((res) => {
-      let message = res ? "" : "Not" + " Updated " + name;
       setTimeout(() => {
+        const message = (res ? "" : "Not") + " Updated " + name;
         globalToats.update(key, {
           message,
           type: "UPDATE",
@@ -82,7 +82,7 @@
     });
   }
   async function handleDelete() {
-    const res = await deleteRecord(id);
+    await deleteRecord(id);
     deleteFlag = false;
 
     globalToats.add({
@@ -112,15 +112,16 @@
   </div>
 {/if}
 
-<tr class="relative rounded-sm border border-transparent">
+<tr class="">
   <td class="hidden"> {id}</td>
-  <td class="max-w-36 overflow-hidden focus-within:min-w-fit">
+  <td class="max-w-[20ch] overflow-hidden focus-within:min-w-fit">
     <input type="text" class="" bind:value={name} />
   </td>
-  <td class="max-w-20">
+  <td class="max-w-[6ch]">
     <input class="max-w-full" type="number" bind:value={size} step="0.01" />
   </td>
-  <td>
+  <!-- Duration -->
+  <td class="max-w-[10ch]">
     {#if durationFlag}
       <div class="flex flex-col">
         <input type="number" class="max-w-20" bind:value={duration} />
@@ -143,20 +144,30 @@
     {/if}
   </td>
   <td
-    class="cursor-pointer px-1.5 text-center text-sm"
+    class="flex cursor-pointer flex-col px-1.5 text-center text-sm"
     onclick={() => {
       isDeleted = !isDeleted;
-    }}>{isDeleted ? "" : "Not"} Deleted</td
+    }}
   >
+    <span>
+      {isDeleted ? " " : "Not"}
+    </span>
+    Deleted
+  </td>
   <td
-    class="cursor-pointer px-1.5 text-center text-sm"
+    class="cursor-pointer text-center"
     onclick={() => {
       isWatched = !isWatched;
-    }}>{isWatched ? "" : "Not"} Watched</td
+    }}
   >
-  <td class="flex max-w-38 flex-col items-center justify-center">
-    <input class="max-w-24" type="number" bind:value={upTime} />
-    <small class="text-center">
+    <span>
+      {isWatched ? " " : "Not"}
+    </span>
+    Watched
+  </td>
+  <td class="">
+    <input class="" type="number" bind:value={upTime} />
+    <small class="">
       {stringDuration(minutesToDateTuple(upTime ?? 0))}
     </small>
   </td>
@@ -177,7 +188,7 @@
       {/if}
     </span>
   </td>
-  <td class="">
+  <td class="max-w-[19ch] text-center">
     {#if completedAt !== null}
       <input
         type="datetime-local"
@@ -191,14 +202,14 @@
       />
     {/if}
   </td>
-  <td>
+  <td class="max-w-[11ch]">
     <select bind:value={diskID} class="text-xs">
       {#each disks as disk}
         <option value={disk.id}>{disk.name} ({disk.space})</option>
       {/each}
     </select>
   </td>
-  <td>
+  <td class="max-w-[11ch]">
     <select bind:value={trackerID} class="text-xs">
       {#each trackers as tracker}
         <option value={tracker.id}>{tracker.name}</option>
@@ -212,6 +223,7 @@
       >UP</button
     >
     <button
+      style="anchor-name: --my-anchor;"
       onclick={() => (deleteFlag = true)}
       class="w-full cursor-pointer bg-red-800 px-2 py-1 text-xs font-semibold text-white uppercase"
       >DEL</button

@@ -98,7 +98,6 @@ export const updateRecord = command(updateRecordSchema, async ({
 export const deleteRecord = command(v.string(), async (id) => {
   try {
     const res = await db.delete(recordDB).where(eq(recordDB.id, id))
-    console.log(res);
     await getRecords().refresh();
     return {
       result: true,

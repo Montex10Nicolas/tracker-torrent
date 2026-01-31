@@ -14,7 +14,6 @@ class Toasts {
 
   // Create a new Tiemout and add it to the map
   private newTimeout(id: string, toast: Toast, delay = DEFAULT_DELAY) {
-    console.log("Creating timeout ", id, toast.message);
     const timeout = setTimeout(() => {
       this.toasts.delete(id);
       this.timeouts.delete(id);
@@ -31,7 +30,6 @@ class Toasts {
   }
 
   update(id: string, toast: Toast, delay = DEFAULT_DELAY) {
-    console.log("Updating", id, toast.message);
     this.toasts.set(id, toast);
     this.timeouts.delete(id);
 
@@ -39,7 +37,6 @@ class Toasts {
   }
 
   delete(uuid: string) {
-    console.log("Closed " + this.toasts.get(uuid));
     this.toasts.delete(uuid);
     const timeout = this.timeouts.get(uuid);
     clearTimeout(timeout);

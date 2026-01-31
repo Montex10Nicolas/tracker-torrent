@@ -74,11 +74,12 @@
         </td>
         <td></td>
         <td></td>
-        <td
-          >{recordSums.uptime}
-          <small>
-            {stringDuration(minutesToDateTuple(recordSums.uptime))}
-          </small>
+        <td class="">
+          <span>
+            {recordSums.uptime}
+          </span>
+          {stringDuration(minutesToDateTuple(recordSums.uptime))}
+          <span> </span>
         </td>
         <td class="flex flex-col">
           <span>

@@ -110,6 +110,10 @@
       {@render displayIssue(fields.upTimeNeeded.issues())}
       <input {...fields.updatedAt.as("number")} type="hidden" />
       {@render displayIssue(fields.updatedAt.issues())}
+      <label>
+        <span> Don't mind me </span>
+        <input type="text" disabled value="this is for appearance only" class="h-full text-xs" />
+      </label>
     </div>
     <button
       onclick={async (e) => {
