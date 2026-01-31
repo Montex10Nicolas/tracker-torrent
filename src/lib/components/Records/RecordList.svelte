@@ -34,7 +34,7 @@
 
 <div class="min-w-screen">
   <table class="w-full">
-    <thead class="">
+    <thead>
       <tr>
         <th scope="col">Name</th>
         <th scope="col">Size</th>
@@ -42,7 +42,7 @@
         <th scope="col">Deleted</th>
         <th scope="col">Watched</th>
         <th scope="col">Uptime</th>
-        <th scope="col">Uptime Needed</th>
+        <th scope="col">Uptime <br /> Needed</th>
         <th scope="col">Completed At</th>
         <th scope="col">DiskID</th>
         <th scope="col">TrackerID</th>
@@ -59,7 +59,7 @@
       {/each}
     </tbody>
     <tfoot class="w-full bg-gray-800 text-center text-white">
-      <tr>
+      <tr class="">
         <th class="py-2 pl-4 text-start">Total:</th>
         <td>{noInfiniteDecimals(recordSums.size)}</td>
         <td class="flex flex-col">
@@ -74,12 +74,13 @@
         </td>
         <td></td>
         <td></td>
-        <td class="">
+        <td class="max-w-[4ch] text-xs">
           <span>
             {recordSums.uptime}
           </span>
-          {stringDuration(minutesToDateTuple(recordSums.uptime))}
-          <span> </span>
+          <span>
+            {stringDuration(minutesToDateTuple(recordSums.uptime))}
+          </span>
         </td>
         <td class="flex flex-col">
           <span>

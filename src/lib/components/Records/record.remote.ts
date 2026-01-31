@@ -88,7 +88,8 @@ export const updateRecord = command(updateRecordSchema, async ({
       }).where(eq(recordDB.id, id))
     await getRecords().refresh();
     return {
-      success: true
+      success: true,
+      ...res
     }
   } catch (e) {
     error(501, "Something wrong" + e);

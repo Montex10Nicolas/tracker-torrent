@@ -71,9 +71,9 @@
       updatedAt: Number(new Date()),
       diskID,
       trackerID,
-    }).then((res) => {
+    }).then(({ success }) => {
       setTimeout(() => {
-        const message = (res ? "" : "Not") + " Updated " + name;
+        const message = (success ? "" : "Not") + " Updated " + name;
         globalToats.update(key, {
           message,
           type: "UPDATE",
@@ -86,18 +86,16 @@
     deleteFlag = false;
 
     globalToats.add({
-      message: `Delted ${name}`,
+      message: `Deleted ${name}`,
       type: "DELETE",
     });
   }
 </script>
 
 {#if deleteFlag}
-  <div
-    class="absolute top-0 left-0 z-99 grid h-screen w-screen place-items-center overflow-hidden bg-gray-800/80"
-  >
-    <div class="rounded-xl bg-white p-8">
-      <p>Do you want to delete <span class="font-bold">{name}</span>?</p>
+  <div class="absolute flex h-screen w-screen items-center justify-center bg-sky-100/80">
+    <div class="">
+      <p>Do you want to delete <span class="text-lg font-extrabold">{name}</span>?</p>
       <div class="flex justify-around">
         <button
           class="cursor-pointer rounded-sm bg-green-700 p-2 font-semibold text-white uppercase"
@@ -114,37 +112,39 @@
 
 <tr class="">
   <td class="hidden"> {id}</td>
-  <td class="max-w-[20ch] overflow-hidden focus-within:min-w-fit">
+  <!-- Name -->
+  <td class="w-[15ch]">
     <input type="text" class="" bind:value={name} />
   </td>
-  <td class="max-w-[6ch]">
-    <input class="max-w-full" type="number" bind:value={size} step="0.01" />
+  <!-- Size -->
+  <td class="flex w-[8ch] justify-center">
+    <input class="w-full" type="number" bind:value={size} step="any" />
   </td>
   <!-- Duration -->
-  <td class="max-w-[10ch]">
-    {#if durationFlag}
-      <div class="flex flex-col">
-        <input type="number" class="max-w-20" bind:value={duration} />
+  <td class="w-[20ch]">
+    <div class="flex justify-center gap-1">
+      {#if durationFlag}
+        <input type="number" class="w-[60%]" bind:value={duration} />
         <button
-          class="mx-auto mb-1 w-full cursor-pointer rounded-sm bg-green-400 px-1 text-sm font-semibold text-black uppercase"
+          class="cursor-pointer rounded-sm bg-green-600 px-2 font-semibold"
           onclick={() => {
             durationFlag = false;
           }}>Close</button
         >
-      </div>
-    {:else}
-      <button
-        class="flex w-full items-center justify-center px-1.5"
-        onclick={() => {
-          durationFlag = !durationFlag;
-        }}
-      >
-        {stringDuration(totalRuntime)}
-      </button>
-    {/if}
+      {:else}
+        <button
+          class="cursor-pointer"
+          onclick={() => {
+            durationFlag = !durationFlag;
+          }}
+        >
+          {stringDuration(totalRuntime)}
+        </button>
+      {/if}
+    </div>
   </td>
   <td
-    class="flex cursor-pointer flex-col px-1.5 text-center text-sm"
+    class="flex flex-col px-1 text-center"
     onclick={() => {
       isDeleted = !isDeleted;
     }}
@@ -155,7 +155,7 @@
     Deleted
   </td>
   <td
-    class="cursor-pointer text-center"
+    class="px-1 text-center"
     onclick={() => {
       isWatched = !isWatched;
     }}
@@ -165,13 +165,13 @@
     </span>
     Watched
   </td>
-  <td class="">
-    <input class="" type="number" bind:value={upTime} />
+  <td class="flex max-w-[10ch] flex-col items-center justify-center text-center">
+    <input class="w-[90%]" type="number" bind:value={upTime} />
     <small class="">
       {stringDuration(minutesToDateTuple(upTime ?? 0))}
     </small>
   </td>
-  <td class="">
+  <td class="max-w-[10ch]">
     <span class="flex flex-col text-center">
       {#if upTimeNeeded === null}
         <span class="font-semibold">
@@ -188,11 +188,11 @@
       {/if}
     </span>
   </td>
-  <td class="max-w-[19ch] text-center">
+  <td class="max-w-[22ch]">
     {#if completedAt !== null}
       <input
         type="datetime-local"
-        class="text-sm"
+        class=""
         bind:value={
           () => local_time(completedAt!),
           (v) => {
@@ -202,34 +202,31 @@
       />
     {/if}
   </td>
-  <td class="max-w-[11ch]">
-    <select bind:value={diskID} class="text-xs">
+  <td class="max-w-[14ch]">
+    <select bind:value={diskID} class="">
       {#each disks as disk}
         <option value={disk.id}>{disk.name} ({disk.space})</option>
       {/each}
     </select>
   </td>
-  <td class="max-w-[11ch]">
-    <select bind:value={trackerID} class="text-xs">
+  <td class="max-w-[12ch]">
+    <select bind:value={trackerID} class="">
       {#each trackers as tracker}
         <option value={tracker.id}>{tracker.name}</option>
       {/each}
     </select>
   </td>
-  <td class="grid grid-cols-2 grid-rows-2"
-    ><button
-      onclick={handleUpdate}
-      class="w-full cursor-pointer bg-sky-400 px-2 text-xs font-semibold text-white uppercase"
+  <td class="grid grid-cols-2 gap-1 px-1"
+    ><button onclick={handleUpdate} class="cursor-pointer rounded-sm bg-amber-400 font-semibold"
       >UP</button
     >
     <button
       style="anchor-name: --my-anchor;"
       onclick={() => (deleteFlag = true)}
-      class="w-full cursor-pointer bg-red-800 px-2 py-1 text-xs font-semibold text-white uppercase"
-      >DEL</button
+      class="cursor-pointer rounded-sm bg-red-600 font-semibold text-white">DEL</button
     >
     <button
-      class="col-span-2 row-span-1 cursor-pointer px-2 py-1 text-xs font-semibold uppercase"
+      class="col-span-2 cursor-pointer rounded-sm bg-sky-300 font-semibold"
       onclick={() => {
         name = freezedRecord.name;
         size = freezedRecord.size;
@@ -261,7 +258,6 @@
   /* } */
 
   td {
-    border-left: 1px solid gray;
   }
 
   select {
