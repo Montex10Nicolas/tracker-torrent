@@ -9,6 +9,10 @@
   let toggleInsert = $state(false);
 
   function switchCreation(flag: typeof insertFlag) {
+    if (toggleInsert && insertFlag === flag) {
+      toggleInsert = false;
+      return;
+    }
     toggleInsert = true;
     insertFlag = flag;
   }

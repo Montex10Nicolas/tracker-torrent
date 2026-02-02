@@ -8,11 +8,19 @@
   const trackers = $derived(await getAllTrackers());
 
   const records = $derived(await getRecords());
+  const recordsLength = $derived(records.length);
   const recordSums = $derived(
     records.reduce(
       (prev, curr) => {
-        const { size, duration, upTime, upTimeNeeded } = curr;
-        if (size === null || duration === null || upTime === null || upTimeNeeded === null) {
+        const { size, duration, upTime, upTimeNeeded, isWatched, isDeleted } = curr;
+        if (
+          size === null ||
+          duration === null ||
+          upTime === null ||
+          upTimeNeeded === null ||
+          isWatched === null ||
+          isDeleted === null
+        ) {
           return prev;
         }
         return {
@@ -20,6 +28,10 @@
           duration: prev.duration + duration,
           uptime: prev.uptime + upTime,
           uptimeNeeded: prev.uptimeNeeded + upTimeNeeded,
+          watched: prev.watched + Number(isWatched),
+          notWatched: prev.notWatched + Number(!isWatched),
+          deleted: prev.deleted + Number(isDeleted),
+          notDeleted: prev.notDeleted + Number(!isDeleted),
         };
       },
       {
@@ -27,6 +39,10 @@
         duration: 0,
         uptime: 0,
         uptimeNeeded: 0,
+        watched: 0,
+        notWatched: 0,
+        deleted: 0,
+        notDeleted: 0,
       },
     ),
   );
@@ -61,35 +77,26 @@
     <tfoot class="w-full bg-gray-800 text-center text-white">
       <tr class="">
         <th class="py-2 pl-4 text-start">Total:</th>
-        <td>{noInfiniteDecimals(recordSums.size)}</td>
-        <td class="flex flex-col">
-          <span>
-            {noInfiniteDecimals(recordSums.duration)}
-          </span>
-          <span>
-            <small>
-              {stringDuration(minutesToDateTuple(recordSums.duration))}
-            </small>
-          </span>
+        <td>{noInfiniteDecimals(recordSums.size)}GB</td>
+        <td class="">
+          {noInfiniteDecimals(recordSums.duration)}m
+          <br />
+          {stringDuration(minutesToDateTuple(recordSums.duration))}
         </td>
-        <td></td>
-        <td></td>
-        <td class="max-w-[4ch] text-xs">
-          <span>
-            {recordSums.uptime}
-          </span>
-          <span>
-            {stringDuration(minutesToDateTuple(recordSums.uptime))}
-          </span>
+        <td>{recordSums.deleted}/{recordsLength} <br />{recordSums.notDeleted}/{recordsLength}</td>
+        <td>{recordSums.watched}/{recordsLength} <br />{recordSums.notWatched}/{recordsLength}</td>
+        <td class="max-w-[4ch]">
+          {recordSums.uptime}m
+          <br />
+          {stringDuration(minutesToDateTuple(recordSums.uptime))}
         </td>
-        <td class="flex flex-col">
+        <td class="">
           <span>
-            {noInfiniteDecimals(recordSums.uptimeNeeded)}
+            {noInfiniteDecimals(recordSums.uptimeNeeded)}m
           </span>
+          <br />
           <span>
-            <small>
-              {stringDuration(minutesToDateTuple(recordSums.uptimeNeeded))}
-            </small>
+            {stringDuration(minutesToDateTuple(recordSums.uptimeNeeded))}
           </span>
         </td>
         <td></td>

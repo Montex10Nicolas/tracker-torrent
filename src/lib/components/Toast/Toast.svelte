@@ -10,18 +10,19 @@
 </script>
 
 <div
-  class="pointer-events-none absolute bottom-0 flex w-screen flex-col items-center justify-center space-y-4 overflow-hidden"
+  class="pointer-events-none sticky bottom-0 flex w-screen flex-col items-center justify-center space-y-4 overflow-hidden"
 >
   {#each globalToats.toasts as [key, toast] (key)}
     {@const bgcolor = colors[toast.type]}
     <div
       in:slide={{ duration: 200 }}
       out:fly={{ y: 0, x: Math.random() <= 0.5 ? 1000 : -1000, duration: 200 }}
-      class="pointer-events-auto grid max-w-64 grid-cols-8 gap-4 rounded-sm {bgcolor} px-1 py-2 text-black"
+      class="pointer-events-auto grid max-w-64 grid-cols-12 gap-4 rounded-sm {bgcolor} px-1 py-2 text-black"
     >
-      <p class="col-span-7">{toast.message}</p>
-      <div class="col-span-1 flex min-w-full items-center justify-center">
-        <button class="cursor-pointer" onclick={() => globalToats.delete(key)}>x</button>
+      <p class="col-span-9 w-[20ch] font-semibold">{toast.message}</p>
+      <hr class="col-span-1 h-full w-full bg-black" />
+      <div class="col-span-2 flex items-center justify-center text-center text-3xl">
+        <button class="cursor-pointer" onclick={() => globalToats.delete(key)}> x </button>
       </div>
     </div>
   {/each}

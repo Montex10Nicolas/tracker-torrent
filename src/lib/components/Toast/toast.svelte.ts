@@ -26,7 +26,7 @@ class Toasts {
     this.toasts.set(randomUUID, toast);
     this.newTimeout(randomUUID, toast, delay);
 
-    return [randomUUID, toast] as const;
+    return [randomUUID, toast, delay] as const;
   }
 
   update(id: string, toast: Toast, delay = DEFAULT_DELAY) {

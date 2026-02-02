@@ -34,6 +34,7 @@
   } = $derived(record);
 
   let durationFlag = $state(false);
+  // Show if the confirm delete is showing
   let deleteFlag = $state(false);
 
   const totalRuntime = $derived.by(() => {
@@ -54,10 +55,13 @@
     )}T${addZeroDate(today.getHours())}:${addZeroDate(today.getMinutes())}`;
 
   async function handleUpdate() {
-    const [key, toast] = globalToats.add({
-      message: `Updating ${name}`,
-      type: "UPDATE",
-    });
+    const [key, _, delay] = globalToats.add(
+      {
+        message: `Updating ${name}`,
+        type: "UPDATE",
+      },
+      2000,
+    );
     await updateRecord({
       id,
       name,
@@ -73,22 +77,30 @@
       trackerID,
     }).then(({ success }) => {
       setTimeout(() => {
-        const message = (success ? "" : "Not") + " Updated " + name;
+        const message = `${success ? "" : "Not"} Updated ${name}`;
         globalToats.update(key, {
           message,
           type: "UPDATE",
         });
-      }, 1000);
+      }, delay);
     });
   }
   async function handleDelete() {
-    await deleteRecord(id);
-    deleteFlag = false;
-
-    globalToats.add({
+    const [key, _, delay] = globalToats.add({
       message: `Deleted ${name}`,
       type: "DELETE",
     });
+    await deleteRecord(id).then((res) => {
+      globalToats.update(
+        key,
+        {
+          message: `${res.result ? "Successfully" : "Unsuccesfully"} deleted`,
+          type: "DELETE",
+        },
+        delay,
+      );
+    });
+    deleteFlag = false;
   }
 </script>
 

@@ -26,6 +26,8 @@
     fields.completedAt.set(today_in_timelocal);
   }
   init();
+
+  let nameInputField: HTMLInputElement | undefined = $state();
 </script>
 
 {#snippet displayIssue(issues: RemoteFormIssue[] | undefined)}
@@ -49,6 +51,7 @@
       });
       await submit();
       form.reset();
+      nameInputField?.focus();
     })}
     class="flex flex-col"
   >
@@ -56,7 +59,7 @@
       <input {...fields.upTimeNeeded.as("number")} type="hidden" />
       <label>
         <span> Name </span>
-        <input {...fields.name.as("text")} />
+        <input {...fields.name.as("text")} bind:this={nameInputField} />
         {@render displayIssue(fields.name.issues())}
       </label>
       <label>

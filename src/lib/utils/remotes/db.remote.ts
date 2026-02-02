@@ -1,9 +1,10 @@
 import { query } from "$app/server";
 import { db } from "$lib/server/db";
 import { disk, tracker, type TrackerSelect } from "$lib/server/db/schema"
+import { asc } from "drizzle-orm";
 
 export const getAllTrackers = query(async () => {
-  const trackers = await db.select().from(tracker);
+  const trackers = await db.select().from(tracker).orderBy(asc(tracker.name));
   const goodOne: TrackerSelect[] = [];
   const nullable = trackers.filter((tracker) => {
     if (tracker.name === "NULL") return tracker;
