@@ -37,26 +37,25 @@
 
   function changeSorting() {
     if (sort === null) return filtered;
-    const ss = sort as Exclude<Fields, null>;
+    const sortedInput = sort as Exclude<Fields, null>;
     const desc = asc;
-    return filtered.sort((a, b) => {
-      const aValue = a[ss];
-      const bValue = b[ss];
-      if (aValue !== null && bValue !== null) {
-        if (desc) {
-          return Number(aValue > bValue);
-        } else {
-          return Number(aValue < bValue);
-        }
-      } else {
+    return filtered.sort((first, second) => {
+      const aValue = first[sortedInput];
+      const bValue = second[sortedInput];
+      if (aValue === null || bValue === null) {
         return 0;
+      }
+      if (desc) {
+        return Number(aValue > bValue);
+      } else {
+        return Number(aValue < bValue);
       }
     });
   }
 
   const recordsLength = $derived(records.length);
   const recordSums = $derived(
-    records.reduce(
+    filtered.reduce(
       (prev, curr) => {
         const { size, duration, upTime, upTimeNeeded, isWatched, isDeleted } = curr;
         if (
@@ -97,11 +96,11 @@
 <div class="min-w-screen">
   <div class="bg-sky-200 px-1 py-1">
     <label>
-      <input type="text" bind:value={name} placeholder="Name..." />
+      <input type="text" class="rounded-xs" bind:value={name} placeholder="Name..." />
     </label>
-    <label for="">
+    <label>
       Sort
-      <select bind:value={sort}>
+      <select class="rounded-xs" bind:value={sort}>
         {#each fields as value}
           <option value={value}>{value}</option>
         {/each}
@@ -109,7 +108,7 @@
     </label>
     <label>
       Asc
-      <input type="checkbox" class="cursor-pointer" bind:checked={asc} />
+      <input type="checkbox" class="h-8 w-8 cursor-pointer rounded-xs" bind:checked={asc} />
     </label>
   </div>
   <table class="w-full">
