@@ -6,7 +6,12 @@ const config = {
   // Consult https://svelte.dev/docs/kit/integrations
   // for more information about preprocessors
   preprocess: vitePreprocess(),
-
+  vitePlugin: {
+    inspector: {
+      showToggleButton: "active",
+      toggleButtonPos: "bottom-right"
+    }
+  },
   kit: {
     adapter: adapter(),
     experimental: {
@@ -16,7 +21,7 @@ const config = {
   compilerOptions: {
     experimental: {
       async: true,
-    }
+    },
   }
 }
 

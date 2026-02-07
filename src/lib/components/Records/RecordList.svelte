@@ -4,39 +4,46 @@
   import { getRecords } from "./record.remote";
   import RecordItem from "./RecordItem.svelte";
 
-  type Fields =
-    | null
-    | "name"
-    | "size"
-    | "duration"
-    | "upTimeNeeded"
-    | "upTime"
-    | "isWatched"
-    | "isDeleted"
-    | "diskID"
-    | "trackerID"
-    | "completedAt";
+  const fields = [
+    "name",
+    "size",
+    "duration",
+    "upTimeNeeded",
+    "upTime",
+    "isWatched",
+    "isDeleted",
+    "diskID",
+    "trackerID",
+    "completedAt",
+  ] as const;
+  type Fields = (typeof fields)[number];
 
   const disks = $derived(await getAllDisks());
   const trackers = $derived(await getAllTrackers());
 
+  let name = $state("");
   let sort: Fields = $state("name");
-  let asc = $state(false);
+  let asc = $state(true);
 
   const dbRecords = $derived(await getRecords());
   let records = $derived(dbRecords);
 
-  let sortedRecords = $state(() => changeSorting());
+  const filtered = $derived.by(() => {
+    if (name === "") return records;
+    return records.filter((record) => {
+      if (record.name.toLowerCase().includes(name.toLowerCase())) return record;
+    });
+  });
 
   function changeSorting() {
-    if (sort === null) return dbRecords;
+    if (sort === null) return filtered;
     const ss = sort as Exclude<Fields, null>;
     const desc = asc;
-    return dbRecords.sort((a, b) => {
+    return filtered.sort((a, b) => {
       const aValue = a[ss];
       const bValue = b[ss];
       if (aValue !== null && bValue !== null) {
-        if (!desc) {
+        if (desc) {
           return Number(aValue > bValue);
         } else {
           return Number(aValue < bValue);
@@ -88,18 +95,21 @@
 </script>
 
 <div class="min-w-screen">
-  <div class="bg-sky-200">
+  <div class="bg-sky-200 px-1 py-1">
+    <label>
+      <input type="text" bind:value={name} placeholder="Name..." />
+    </label>
     <label for="">
       Sort
       <select bind:value={sort}>
-        {#each ["name", "size", "duration", "isDeleted", "isWatched", "upTime", "upTimeNeeded", "completedAt", "diskID", "trackerID"] as value}
+        {#each fields as value}
           <option value={value}>{value}</option>
         {/each}
       </select>
     </label>
-    <label for=""
-      >Asc
-      <input type="checkbox" bind:checked={asc} />
+    <label>
+      Asc
+      <input type="checkbox" class="cursor-pointer" bind:checked={asc} />
     </label>
   </div>
   <table class="w-full">
@@ -119,7 +129,7 @@
       </tr>
     </thead>
     <tbody class="">
-      {#each sortedRecords() as record (`${sort}-${String(asc)}-${record.id}`)}
+      {#each changeSorting() as record (`${sort}-${String(asc)}-${record.id}`)}
         <RecordItem record={record} disks={disks} trackers={trackers} />
       {:else}
         <tr>

@@ -8,5 +8,10 @@
     "pathPattern": "./messages/{locale}.json"
   },
   "baseLocale": "en",
-  "locales": ["en", "en"]
+  "locales": [
+    "en"
+  ],
+  "terminal.integrated.env.linux": {
+    "EDITOR": "nvim"
+  }
 }

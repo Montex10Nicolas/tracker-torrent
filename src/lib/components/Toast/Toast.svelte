@@ -10,7 +10,7 @@
 </script>
 
 <div
-  class="pointer-events-none sticky bottom-0 flex w-screen flex-col items-center justify-center space-y-4 overflow-hidden"
+  class="pointer-events-none fixed bottom-5 flex w-screen flex-col items-center justify-center space-y-4 overflow-hidden"
 >
   {#each globalToats.toasts as [key, toast] (key)}
     {@const bgcolor = colors[toast.type]}
