@@ -16,7 +16,7 @@
   };
   const { record = $bindable(), disks, trackers }: Props = $props();
 
-  const freezedRecord = Object.freeze(record);
+  const freezedRecord = $derived(Object.freeze(record));
 
   let {
     id,
@@ -32,6 +32,20 @@
     diskID,
     trackerID,
   } = $derived(record);
+
+  const hasSomethingChanged = $derived.by(() => {
+    if (id !== freezedRecord.id) return true;
+    if (isDeleted !== freezedRecord.isDeleted) return true;
+    if (name !== freezedRecord.name) return true;
+    if (size !== freezedRecord.size) return true;
+    if (duration !== freezedRecord.duration) return true;
+    if (isWatched !== freezedRecord.isWatched) return true;
+    if (upTime !== freezedRecord.upTime) return true;
+    if (completedAt !== freezedRecord.completedAt) return true;
+    if (diskID !== freezedRecord.diskID) return true;
+    if (trackerID !== freezedRecord.trackerID) return true;
+    return false;
+  });
 
   let durationFlag = $state(false);
   // Show if the confirm delete is showing
@@ -105,8 +119,8 @@
 </script>
 
 {#if deleteFlag}
-  <div class="absolute flex h-screen w-screen items-center justify-center bg-sky-100/80">
-    <div class="">
+  <div class="fixed top-0 left-0 flex h-screen w-screen items-center justify-center bg-sky-100/80">
+    <div class="rounded-md border border-black bg-white px-8 py-6">
       <p>Do you want to delete <span class="text-lg font-extrabold">{name}</span>?</p>
       <div class="flex justify-around">
         <button
@@ -156,25 +170,23 @@
     </div>
   </td>
   <td
-    class="flex flex-col px-1 text-center"
+    class="cursor-pointer flex-col px-1 text-center"
     onclick={() => {
       isDeleted = !isDeleted;
     }}
   >
-    <span>
-      {isDeleted ? " " : "Not"}
-    </span>
+    {isDeleted ? " " : "Not"}
+    <br />
     Deleted
   </td>
   <td
-    class="px-1 text-center"
+    class="cursor-pointer px-1 text-center"
     onclick={() => {
       isWatched = !isWatched;
     }}
   >
-    <span>
-      {isWatched ? " " : "Not"}
-    </span>
+    {isWatched ? " " : "Not"}
+    <br />
     Watched
   </td>
   <td class="flex max-w-[10ch] flex-col items-center justify-center text-center">
@@ -229,7 +241,10 @@
     </select>
   </td>
   <td class="grid grid-cols-2 gap-1 px-1"
-    ><button onclick={handleUpdate} class="cursor-pointer rounded-sm bg-amber-400 font-semibold"
+    ><button
+      disabled={!hasSomethingChanged}
+      onclick={handleUpdate}
+      class="cursor-pointer rounded-sm bg-amber-400 font-semibold disabled:bg-gray-700 disabled:text-white"
       >UP</button
     >
     <button
@@ -238,7 +253,8 @@
       class="cursor-pointer rounded-sm bg-red-600 font-semibold text-white">DEL</button
     >
     <button
-      class="col-span-2 cursor-pointer rounded-sm bg-sky-300 font-semibold"
+      class="col-span-2 cursor-pointer rounded-sm bg-sky-300 font-semibold disabled:bg-gray-700 disabled:text-white"
+      disabled={!hasSomethingChanged}
       onclick={() => {
         name = freezedRecord.name;
         size = freezedRecord.size;

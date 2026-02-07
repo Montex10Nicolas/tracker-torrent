@@ -41,4 +41,3 @@ export type RecordSelect = typeof recordDB.$inferSelect;
 
 export type DiskSelect = typeof disk.$inferSelect;
 export type TrackerSelect = typeof tracker.$inferSelect;
-

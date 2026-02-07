@@ -7,8 +7,9 @@
   const disks = $derived(await getAllDisks());
 </script>
 
+<div class="absolute top-0 left-0 z-90 min-h-screen min-w-screen bg-gray-800/80"></div>
 <div
-  class="absolute top-0 right-0 z-99 min-h-screen w-80 rounded-l-xl border-l border-black bg-blue-800 font-semibold text-white"
+  class="fixed top-0 right-0 z-99 min-h-screen w-80 rounded-l-xl border-l border-black bg-blue-800 font-semibold text-white"
 >
   <div class="flex w-full justify-end px-4 py-2">
     <button
@@ -21,7 +22,7 @@
   <div class="flex flex-col gap-4 px-4">
     <a onclick={() => tabManager.change()} href={resolve("/")}>Home</a>
     <details>
-      <ul>
+      <ul class="list-disc pl-4">
         {#each trackers as tracker}
           {#if tracker.name !== "NULL"}
             <li>
@@ -35,11 +36,11 @@
           {/if}
         {/each}
       </ul>
-      <summary class="cursor-pointer"> Trackers </summary>
+      <summary class="cursor-pointer" style="list-style-type: '';"> Trackers </summary>
     </details>
 
     <details>
-      <ul>
+      <ul class="list-disc pl-4">
         {#each disks as disk}
           <li>
             <a onclick={() => tabManager.change()} href={resolve("/disks/[id]", { id: disk.id })}>
@@ -48,7 +49,7 @@
           </li>
         {/each}
       </ul>
-      <summary class="cursor-pointer"> Disks </summary>
+      <summary class="cursor-pointer" style="list-style-type: '';"> Disks </summary>
     </details>
   </div>
 </div>

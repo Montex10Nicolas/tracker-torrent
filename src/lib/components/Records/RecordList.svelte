@@ -4,10 +4,49 @@
   import { getRecords } from "./record.remote";
   import RecordItem from "./RecordItem.svelte";
 
+  type Fields =
+    | null
+    | "name"
+    | "size"
+    | "duration"
+    | "upTimeNeeded"
+    | "upTime"
+    | "isWatched"
+    | "isDeleted"
+    | "diskID"
+    | "trackerID"
+    | "completedAt";
+
   const disks = $derived(await getAllDisks());
   const trackers = $derived(await getAllTrackers());
 
-  const records = $derived(await getRecords());
+  let sort: Fields = $state("name");
+  let asc = $state(false);
+
+  const dbRecords = $derived(await getRecords());
+  let records = $derived(dbRecords);
+
+  let sortedRecords = $state(() => changeSorting());
+
+  function changeSorting() {
+    if (sort === null) return dbRecords;
+    const ss = sort as Exclude<Fields, null>;
+    const desc = asc;
+    return dbRecords.sort((a, b) => {
+      const aValue = a[ss];
+      const bValue = b[ss];
+      if (aValue !== null && bValue !== null) {
+        if (!desc) {
+          return Number(aValue > bValue);
+        } else {
+          return Number(aValue < bValue);
+        }
+      } else {
+        return 0;
+      }
+    });
+  }
+
   const recordsLength = $derived(records.length);
   const recordSums = $derived(
     records.reduce(
@@ -49,6 +88,20 @@
 </script>
 
 <div class="min-w-screen">
+  <div class="bg-sky-200">
+    <label for="">
+      Sort
+      <select bind:value={sort}>
+        {#each ["name", "size", "duration", "isDeleted", "isWatched", "upTime", "upTimeNeeded", "completedAt", "diskID", "trackerID"] as value}
+          <option value={value}>{value}</option>
+        {/each}
+      </select>
+    </label>
+    <label for=""
+      >Asc
+      <input type="checkbox" bind:checked={asc} />
+    </label>
+  </div>
   <table class="w-full">
     <thead>
       <tr>
@@ -66,7 +119,7 @@
       </tr>
     </thead>
     <tbody class="">
-      {#each records as record}
+      {#each sortedRecords() as record (`${sort}-${String(asc)}-${record.id}`)}
         <RecordItem record={record} disks={disks} trackers={trackers} />
       {:else}
         <tr>
@@ -76,15 +129,15 @@
     </tbody>
     <tfoot class="w-full bg-gray-800 text-center text-white">
       <tr class="">
-        <th class="py-2 pl-4 text-start">Total:</th>
+        <th class="py-2 pl-4 text-start">Total: {recordsLength}</th>
         <td>{noInfiniteDecimals(recordSums.size)}GB</td>
         <td class="">
           {noInfiniteDecimals(recordSums.duration)}m
           <br />
           {stringDuration(minutesToDateTuple(recordSums.duration))}
         </td>
-        <td>{recordSums.deleted}/{recordsLength} <br />{recordSums.notDeleted}/{recordsLength}</td>
-        <td>{recordSums.watched}/{recordsLength} <br />{recordSums.notWatched}/{recordsLength}</td>
+        <td>{recordSums.deleted}<br />{recordSums.notDeleted}</td>
+        <td>{recordSums.watched}<br />{recordSums.notWatched}</td>
         <td class="max-w-[4ch]">
           {recordSums.uptime}m
           <br />

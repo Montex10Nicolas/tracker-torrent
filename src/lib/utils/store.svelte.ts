@@ -1,8 +1,9 @@
+export let isTabRoutesOpen = $state(false);
 class TabManager {
   isOpen = $state(false);
 
-  constructor() {
-    this.isOpen = false;
+  constructor(value = false) {
+    this.isOpen = value;
   }
 
   change() {

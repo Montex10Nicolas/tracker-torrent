@@ -19,7 +19,9 @@
 </script>
 
 <main>
-  <div class="relative my-2 flex items-center justify-center gap-8">
+  <div
+    class="sticky top-0 left-0 my-2 flex items-center justify-center gap-8 border-b border-b-black bg-white py-2"
+  >
     <button
       onclick={() => {
         toggleInsert = !toggleInsert;
@@ -59,7 +61,7 @@
     {:else if insertFlag === "disk"}
       <CreateDisk />
     {/if}
+    <hr class="w-full" />
   {/if}
-  <hr class="my-2 w-full" />
   <RecordList />
 </main>
