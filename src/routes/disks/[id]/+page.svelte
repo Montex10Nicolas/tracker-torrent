@@ -1,6 +1,7 @@
 <script lang="ts">
   import { addZeroDate, minutesToDateTuple } from "$lib/utils/index.svelte";
   import { tabManager } from "$lib/utils/store.svelte.js";
+  import { onMount } from "svelte";
   import { recordById } from "./disk.remote";
 
   const { params } = $props();
@@ -65,6 +66,10 @@
     return trackers;
   });
 </script>
+
+<svelte:head>
+  <title>Disk {disk.name}</title>
+</svelte:head>
 
 <div
   class="relative flex items-center justify-between bg-sky-400 px-4 py-2 text-3xl font-extrabold"

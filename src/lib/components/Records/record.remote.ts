@@ -3,7 +3,8 @@ import { db } from "$lib/server/db";
 import { recordDB, tracker } from "$lib/server/db/schema";
 import * as v from "valibot";
 import { error } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+import { and, eq, gt, lt } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 
 export const getRecords = query(async () => {
   return await db.select().from(recordDB);
@@ -23,14 +24,16 @@ const insertRecordSchema = v.object({
   updatedAt: v.number()
 });
 
+// WARNING: Check if latestDownload is actual latestDownload
 export const insertRecord = form(insertRecordSchema, async ({
   name, size, duration, upTime, upTimeNeeded, isWatched, isDeleted, completedAt, updatedAt, trackerID, diskID
 }) => {
   try {
+    const compAt = new Date(completedAt)
     await db.insert(recordDB).values({
       id: crypto.randomUUID(),
       diskID,
-      completedAt: new Date(completedAt),
+      completedAt: compAt,
       name,
       size,
       duration,
@@ -41,9 +44,15 @@ export const insertRecord = form(insertRecordSchema, async ({
       upTimeNeeded,
       updatedAt: new Date(updatedAt)
     });
-    await db.update(tracker).set({
-      latestDownload: new Date()
-    }).where(eq(tracker.id, trackerID));
+
+    const { latestDownload } = (await db.select().from(tracker).where(eq(tracker.id, trackerID)).limit(1))[0];
+
+    if (latestDownload === null || latestDownload < compAt) {
+      await db.update(tracker).set({
+        latestDownload: compAt
+      }).where(
+        eq(tracker.id, trackerID));
+    }
     return {
       response: "Everything okay"
     };

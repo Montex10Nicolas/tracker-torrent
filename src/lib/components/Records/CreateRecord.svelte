@@ -52,6 +52,7 @@
       await submit();
       form.reset();
       nameInputField?.focus();
+      init();
     })}
     class="flex flex-col"
   >
